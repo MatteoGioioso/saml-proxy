@@ -38,8 +38,8 @@ func (g RouteGenerator) CreateSamlService(domain string) (*samlsp.Middleware, er
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(domain)
-	rootURL, err := url.Parse(fmt.Sprintf("http://%s", domain))
+
+	rootURL, err := url.Parse(domain)
 	if err != nil {
 		return nil, err
 	}

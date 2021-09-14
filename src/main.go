@@ -58,7 +58,7 @@ func createSession(m *samlsp.Middleware, w http.ResponseWriter, r *http.Request,
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     c.Name,
-		Domain:   ".mycoolsaml.com",
+		Domain:   "dashboard.mycoolsaml.com",
 		Value:    value,
 		MaxAge:   int(c.MaxAge.Seconds()),
 		HttpOnly: c.HTTPOnly,
@@ -71,24 +71,24 @@ func createSession(m *samlsp.Middleware, w http.ResponseWriter, r *http.Request,
 
 
 func createSessionFromAssertion(m *samlsp.Middleware, w http.ResponseWriter, r *http.Request, assertion *saml.Assertion) {
-	redirectURI := "/"
-	if trackedRequestIndex := r.Form.Get("RelayState"); trackedRequestIndex != "" {
-		trackedRequest, err := m.RequestTracker.GetTrackedRequest(r, trackedRequestIndex)
-		if err != nil {
-			m.OnError(w, r, err)
-			return
-		}
-		m.RequestTracker.StopTrackingRequest(w, r, trackedRequestIndex)
+	//redirectURI := "/"
+	//if trackedRequestIndex := r.Form.Get("RelayState"); trackedRequestIndex != "" {
+	//	trackedRequest, err := m.RequestTracker.GetTrackedRequest(r, trackedRequestIndex)
+	//	if err != nil {
+	//		m.OnError(w, r, err)
+	//		return
+	//	}
+	//	m.RequestTracker.StopTrackingRequest(w, r, trackedRequestIndex)
+	//
+	//	redirectURI = trackedRequest.URI
+	//}
 
-		redirectURI = trackedRequest.URI
-	}
-
-	if err := createSession(m, w, r, assertion); err != nil {
+	if err := m.Session.CreateSession(w, r, assertion); err != nil {
 		m.OnError(w, r, err)
 		return
 	}
 
-	http.Redirect(w, r, redirectURI, http.StatusFound)
+	http.Redirect(w, r, "http://dashboard.mycoolsaml.com:8080", http.StatusFound)
 }
 
 
@@ -150,7 +150,7 @@ func handleStartAuthFlow(m  *samlsp.Middleware,w http.ResponseWriter, r *http.Re
 	// this means that we cannot use a JWT because it is way to long. Instead
 	// we set a signed cookie that encodes the original URL which we'll check
 	// against the SAML response when we get it.
-	relayState, err := trackRequest(m, w, r, authReq.ID)
+	relayState, err := m.RequestTracker.TrackRequest(w, r, authReq.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -176,12 +176,17 @@ func handleStartAuthFlow(m  *samlsp.Middleware,w http.ResponseWriter, r *http.Re
 	panic("not reached")
 }
 
-func genericHandler(samlSP *samlsp.Middleware) func(w http.ResponseWriter, r *http.Request) {
+func genericHandler(generator RouteGenerator) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.URL.String())
+		fmt.Println(r.Host, r.URL.String())
+		samlSP, err := generator.CreateSamlService("http://dashboard.mycoolsaml.com:8080")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		if r.URL.Path == "/saml/auth" {
-			fmt.Printf("%+v\n", r.Header)
 			session, err := samlSP.Session.GetSession(r)
+			fmt.Printf("SESSION: %+v\n", session)
 			if session != nil {
 				w.WriteHeader(200)
 				return
@@ -196,8 +201,6 @@ func genericHandler(samlSP *samlsp.Middleware) func(w http.ResponseWriter, r *ht
 		}
 
 		if r.URL.Path == "/saml/login" {
-			fmt.Printf("%+v\n", r.Header)
-			fmt.Printf("%+v\n", r.Host)
 			handleStartAuthFlow(samlSP, w, r)
 			return
 		}
@@ -211,6 +214,8 @@ func genericHandler(samlSP *samlsp.Middleware) func(w http.ResponseWriter, r *ht
 			samlSP.ServeHTTP(w, r)
 			return
 		}
+
+		w.WriteHeader(200)
 	}
 }
 
@@ -219,12 +224,7 @@ func main() {
 		MetadataEndpoint: os.Getenv("SAML_METADATA_ENDPOINT"),
 	}
 
-	samlSP, err := generator.CreateSamlService("auth.mycoolsaml.com:9000")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	handler := http.HandlerFunc(genericHandler(samlSP))
+	handler := http.HandlerFunc(genericHandler(generator))
 
 	if err := http.ListenAndServe(":9000", handler); err != nil {
 		log.Fatal(err)
