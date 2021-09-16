@@ -6,7 +6,6 @@ import (
 	"github.com/MatteoGioioso/saml-proxy/sharedKernel"
 	"github.com/crewjam/saml/samlsp"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 type AuthController struct {
@@ -20,22 +19,26 @@ func (c AuthController) Handler() gin.IRoutes {
 	return c.Router.GET("/saml/auth", func(context *gin.Context) {
 		rootUrl, err := c.Director.GetRootUrl(context.Request)
 		if err != nil {
-			log.Fatal(err)
+			c.Logger.Failure(err)
+			context.JSON(400, gin.H{"message": err.Error()})
+			return
 		}
 
-		samlSP := c.SamlDomain.GetProvider(rootUrl)
+		samlSP, err := c.SamlDomain.GetProvider(rootUrl)
 		if err != nil {
-			log.Fatal(err)
+			c.Logger.Failure(err)
+			context.JSON(400, gin.H{"message": err.Error()})
+			return
 		}
 
 		session, err := samlSP.Session.GetSession(context.Request)
 		if session != nil {
-			context.Writer.WriteHeader(200)
+			context.Status(200)
 			return
 		}
 
 		if err == samlsp.ErrNoSession {
-			context.Writer.WriteHeader(401)
+			context.Status(401)
 			return
 		}
 	})

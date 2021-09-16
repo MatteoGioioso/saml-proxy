@@ -35,7 +35,13 @@ func (d Director) GetRedirect(req *http.Request) (string, error) {
 
 func (d Director) GetRootUrl(req *http.Request) (string, error) {
 	protocol := req.Header.Get(XForwardedProto)
+	if protocol == "" {
+		return "", errors.New(XForwardedProto + " header is missing")
+	}
 	host := req.Header.Get(XForwardedHost)
+	if host == "" {
+		return "", errors.New(XForwardedHost + " header is missing")
+	}
 	rootUrl := fmt.Sprintf("%s://%s", protocol, host)
 	return rootUrl, nil
 }

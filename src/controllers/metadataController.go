@@ -18,11 +18,16 @@ func (c MetadataController) Handler() gin.IRoutes {
 	return c.Router.GET("/saml/metadata", func(context *gin.Context) {
 		rootUrl, err := c.Director.GetRootUrl(context.Request)
 		if err != nil {
-			context.Writer.WriteHeader(500)
-			context.Writer.Write([]byte(err.Error()))
+			context.JSON(400, gin.H{"message": err})
 			return
 		}
-		middleware := c.SamlDomain.GetProvider(rootUrl)
+
+		middleware, err := c.SamlDomain.GetProvider(rootUrl)
+		if err != nil {
+			context.JSON(400, gin.H{"message": err})
+			return
+		}
+
 		middleware.ServeHTTP(context.Writer, context.Request)
 	})
 }

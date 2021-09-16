@@ -1,3 +1,4 @@
 .idea
 env.sh
 src/saml-proxy
+src/assets

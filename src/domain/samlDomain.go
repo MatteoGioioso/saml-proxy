@@ -6,6 +6,9 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/MatteoGioioso/saml-proxy/sharedKernel"
 	"github.com/crewjam/saml/samlsp"
 	"log"
 	"net/http"
@@ -19,9 +22,10 @@ type SamlDomain struct {
 	SamlMiddlewares map[string]*samlsp.Middleware
 	MetadataEndpoint string
 	AllowedHosts []string
+	logger sharedKernel.Logger
 }
 
-func NewSamlDomain(metadataEndpoint string) *SamlDomain {
+func NewSamlDomain(metadataEndpoint string, logger sharedKernel.Logger) *SamlDomain {
 	s := &SamlDomain{}
 	hosts, err := s.getAllowedHosts()
 	if err != nil {
@@ -31,12 +35,14 @@ func NewSamlDomain(metadataEndpoint string) *SamlDomain {
 	s.AllowedHosts = hosts
 	s.SamlMiddlewares = make(map[string]*samlsp.Middleware)
 	s.MetadataEndpoint = metadataEndpoint
+	s.logger = logger
 
 	return s
 }
 
 func (g SamlDomain) CreateMiddlewares() error {
 	for _, host := range g.AllowedHosts {
+		g.logger.Info("Creating middlewares for host: " + host)
 		middleware, err := g.createMiddleware(host)
 		if err != nil {
 			return err
@@ -49,7 +55,11 @@ func (g SamlDomain) CreateMiddlewares() error {
 }
 
 func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) {
-	keyPair, err := tls.LoadX509KeyPair("assets/saml-proxy.crt", "assets/saml-proxy.key")
+	if err := sharedKernel.GenerateCertificates(domain); err != nil {
+		return nil, err
+	}
+
+	keyPair, err := tls.LoadX509KeyPair(sharedKernel.GetCertPath(domain), sharedKernel.GetCertKeyPath(domain))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +78,7 @@ func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) 
 		return nil, err
 	}
 
-	rootURL, err := url.Parse(domain)
+	rootURL, err := url.Parse(fmt.Sprintf("https://%s", domain))
 	if err != nil {
 		return nil, err
 	}
@@ -89,15 +99,18 @@ func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) 
 	return samlSP, nil
 }
 
-func (g SamlDomain) GetProvider(domain string) *samlsp.Middleware {
-	host, ok := g.SamlMiddlewares[domain]
-	if ok {
-		return host
+func (g SamlDomain) GetProvider(domain string) (*samlsp.Middleware, error) {
+	parse, err := url.Parse(domain)
+	if err != nil {
+		return nil, err
 	}
 
-	// TODO: change with proper 500 response
-	log.Fatal("no allowed host")
-	return nil
+	host, ok := g.SamlMiddlewares[parse.Host]
+	if ok {
+		return host, nil
+	}
+
+	return nil, errors.New("no allowed host found")
 }
 
 func (g SamlDomain) getAllowedHosts() ([]string, error) {

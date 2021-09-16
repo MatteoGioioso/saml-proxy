@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/base64"
-	"fmt"
 	"github.com/MatteoGioioso/saml-proxy/director"
 	"github.com/MatteoGioioso/saml-proxy/domain"
 	"github.com/MatteoGioioso/saml-proxy/sharedKernel"
@@ -25,14 +24,18 @@ type SigninController struct {
 func (c *SigninController) Handler() gin.IRoutes {
 	return c.Router.GET("/saml/sign_in", func(context *gin.Context) {
 		rootUrl, err := c.Director.GetRootUrl(context.Request)
-		fmt.Println("Signin controller root url: ", rootUrl)
 		if err != nil {
-			context.Writer.WriteHeader(500)
-			context.Writer.Write([]byte(err.Error()))
+			context.JSON(400, gin.H{"message": err})
 			return
 		}
+
 		c.rootUrl = rootUrl
-		c.middleware = c.SamlDomain.GetProvider(c.rootUrl)
+		c.middleware, err = c.SamlDomain.GetProvider(c.rootUrl)
+		if err != nil {
+			context.JSON(400, gin.H{"message": err})
+			return
+		}
+
 		c.handleStartAuthFlow(context.Writer, context.Request)
 	})
 }
