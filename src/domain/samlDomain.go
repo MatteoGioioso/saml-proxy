@@ -19,10 +19,10 @@ import (
 type samlHosts []string
 
 type SamlDomain struct {
-	SamlMiddlewares map[string]*samlsp.Middleware
+	SamlMiddlewares  map[string]*samlsp.Middleware
 	MetadataEndpoint string
-	AllowedHosts []string
-	logger sharedKernel.Logger
+	AllowedHosts     []string
+	logger           sharedKernel.Logger
 }
 
 func NewSamlDomain(metadataEndpoint string, logger sharedKernel.Logger) *SamlDomain {
@@ -47,7 +47,7 @@ func (g SamlDomain) CreateMiddlewares() error {
 		if err != nil {
 			return err
 		}
-		
+
 		g.SamlMiddlewares[host] = middleware
 	}
 
@@ -55,11 +55,19 @@ func (g SamlDomain) CreateMiddlewares() error {
 }
 
 func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) {
-	if err := sharedKernel.GenerateCertificates(domain); err != nil {
-		return nil, err
+	if os.Getenv("SSL_CERTIFICATE_AUTOGENERATE") == "true" {
+		g.logger.Info("Generating certificates for host: " + domain)
+		if err := sharedKernel.GenerateCertificates(domain); err != nil {
+			return nil, err
+		}
 	}
 
-	keyPair, err := tls.LoadX509KeyPair(sharedKernel.GetCertPath(domain), sharedKernel.GetCertKeyPath(domain))
+	certPath := sharedKernel.GetCertPath(domain)
+	certKeyPath := sharedKernel.GetCertKeyPath(domain)
+	if certPath == "" || certKeyPath == "" {
+		return nil, errors.New("cert or key path are missing")
+	}
+	keyPair, err := tls.LoadX509KeyPair(certPath, certKeyPath)
 	if err != nil {
 		return nil, err
 	}

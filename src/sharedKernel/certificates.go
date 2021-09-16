@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/big"
+	"os"
 	"time"
 )
 
@@ -67,11 +68,19 @@ func GenerateCertificates(domain string) error {
 }
 
 func GetCertPath(domain string) string {
-	return getPath(domain, "crt")
+	if os.Getenv("SSL_CERTIFICATE_AUTOGENERATE") == "true" {
+		return getPath(domain, "crt")
+	}
+
+	return os.Getenv("SSL_CERTIFICATE_PATH")
 }
 
 func GetCertKeyPath(domain string) string {
-	return getPath(domain, "key")
+	if os.Getenv("SSL_CERTIFICATE_AUTOGENERATE") == "true" {
+		return getPath(domain, "key")
+	}
+
+	return os.Getenv("SSL_CERTIFICATE_KEY_PATH")
 }
 
 func getPath(domain, extension string) string {
