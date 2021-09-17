@@ -8,7 +8,6 @@ import (
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlsp"
 	"github.com/gin-gonic/gin"
-	"io"
 	"net/http"
 )
 
@@ -108,7 +107,7 @@ func (c SigninController) trackRequest(w http.ResponseWriter, r *http.Request, s
 	}
 
 	trackedRequest := samlsp.TrackedRequest{
-		Index:         base64.RawURLEncoding.EncodeToString(randomBytes(42)),
+		Index:         base64.RawURLEncoding.EncodeToString(sharedKernel.RandomBytes(42)),
 		SAMLRequestID: samlRequestID,
 		URI:           redirect,
 	}
@@ -128,13 +127,4 @@ func (c SigninController) trackRequest(w http.ResponseWriter, r *http.Request, s
 	})
 
 	return trackedRequest.Index, nil
-}
-
-func randomBytes(n int) []byte {
-	rv := make([]byte, n)
-
-	if _, err := io.ReadFull(saml.RandReader, rv); err != nil {
-		panic(err)
-	}
-	return rv
 }

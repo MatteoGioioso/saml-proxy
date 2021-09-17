@@ -56,6 +56,10 @@ func GenerateCertificates(domain string) error {
 		return err
 	}
 
+	if err := os.MkdirAll("certs", fs.ModePerm); err != nil {
+		return err
+	}
+
 	if err := ioutil.WriteFile(GetCertPath(domain), certPEM.Bytes(), fs.ModePerm); err != nil {
 		return err
 	}
@@ -84,5 +88,5 @@ func GetCertKeyPath(domain string) string {
 }
 
 func getPath(domain, extension string) string {
-	return fmt.Sprintf("assets/%s.%s", domain, extension)
+	return fmt.Sprintf("certs/%s.%s", domain, extension)
 }

@@ -55,7 +55,7 @@ func (g SamlDomain) CreateMiddlewares() error {
 }
 
 func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) {
-	if os.Getenv("SSL_CERTIFICATE_AUTOGENERATE") == "true" {
+	if sharedKernel.GetEnvWithFallbackBool("SSL_CERTIFICATE_AUTOGENERATE", true) {
 		g.logger.Info("Generating certificates for host: " + domain)
 		if err := sharedKernel.GenerateCertificates(domain); err != nil {
 			return nil, err
@@ -96,9 +96,9 @@ func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) 
 		URL:               *rootURL,
 		Key:               keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate:       keyPair.Leaf,
-		AllowIDPInitiated: true,
 		IDPMetadata:       idpMetadata,
-		SignRequest:       true,
+		AllowIDPInitiated: sharedKernel.GetEnvWithFallbackBool("SAML_ALLOW_IDP_INITIATED", true),
+		SignRequest:       sharedKernel.GetEnvWithFallbackBool("SAML_SIGN_REQUEST", true),
 	})
 	if err != nil {
 		return nil, err

@@ -2,3 +2,6 @@
 env.sh
 src/saml-proxy
 src/assets
+src/*.crt
+src/*.key
+src/certs

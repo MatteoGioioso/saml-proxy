@@ -11,7 +11,7 @@ type HealthController struct {
 }
 
 func (c HealthController) Handler() gin.IRoutes {
-	return c.Router.GET("/", func(context *gin.Context) {
+	return c.Router.GET("/health", func(context *gin.Context) {
 		context.Status(200)
 	})
 }
