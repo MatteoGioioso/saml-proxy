@@ -23,6 +23,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	healthController := controllers.HealthController{
+		Router: r,
+		Logger: logger,
+	}
 	authController := controllers.AuthController{
 		Router:     r,
 		SamlDomain: samlDomain,
@@ -48,6 +52,7 @@ func main() {
 		Director:   dir,
 	}
 
+	healthController.Handler()
 	authController.Handler()
 	signinController.Handler()
 	acsController.Handler()

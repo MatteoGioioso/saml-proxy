@@ -18,12 +18,14 @@ func (c AcsController) Handler() gin.IRoutes {
 	return c.Router.POST("/saml/acs", func(context *gin.Context) {
 		rootUrl, err := c.Director.GetRootUrl(context.Request)
 		if err != nil {
+			c.Logger.Failure(err)
 			context.JSON(400, gin.H{"message": err})
 			return
 		}
 
 		middleware, err := c.SamlDomain.GetProvider(rootUrl)
 		if err != nil {
+			c.Logger.Failure(err)
 			context.JSON(400, gin.H{"message": err})
 			return
 		}

@@ -65,7 +65,7 @@ func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) 
 	certPath := sharedKernel.GetCertPath(domain)
 	certKeyPath := sharedKernel.GetCertKeyPath(domain)
 	if certPath == "" || certKeyPath == "" {
-		return nil, errors.New("cert or key path are missing")
+		return nil, errors.New("cert or key path is missing")
 	}
 	keyPair, err := tls.LoadX509KeyPair(certPath, certKeyPath)
 	if err != nil {

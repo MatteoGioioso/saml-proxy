@@ -25,6 +25,7 @@ func (c *SigninController) Handler() gin.IRoutes {
 	return c.Router.GET("/saml/sign_in", func(context *gin.Context) {
 		rootUrl, err := c.Director.GetRootUrl(context.Request)
 		if err != nil {
+			c.Logger.Failure(err)
 			context.JSON(400, gin.H{"message": err})
 			return
 		}
@@ -32,6 +33,7 @@ func (c *SigninController) Handler() gin.IRoutes {
 		c.rootUrl = rootUrl
 		c.middleware, err = c.SamlDomain.GetProvider(c.rootUrl)
 		if err != nil {
+			c.Logger.Failure(err)
 			context.JSON(400, gin.H{"message": err})
 			return
 		}
