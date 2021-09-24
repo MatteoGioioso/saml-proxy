@@ -1,7 +1,9 @@
 replicaCount: 1
 
 config:
-  samlMetadataEndpoint: https://myidp.com/metadata/000000000000
+  # Your Identity provider metadata endpoint
+  # https://myidp.com/metadata/000000000000
+  samlMetadataEndpoint:
   # List of allowed hosts
   samlHosts: []
   samlAllowIdpInitiated: true
@@ -11,6 +13,7 @@ config:
   sslCertificatePath: ""
   sslCertificateKeyPath: ""
   proxyPort: 9000
+  protocol: "https"
 
 image:
   repository: public.ecr.aws/f4h3b7s7/saml-proxy

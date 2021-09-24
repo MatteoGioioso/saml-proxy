@@ -40,19 +40,19 @@ spec:
           env:
             - name: PORT
               value: {{.Values.config.proxyPort | quote}}
-            - name: SAML_METADATA_ENDPOINT
+            - name: SAML_PROXY_METADATA_ENDPOINT
               value: {{.Values.config.samlMetadataEndpoint}}
-            - name: SAML_HOSTS
-              value: {{.Values.config.samlHosts}}
-            - name: SAML_ALLOW_IDP_INITIATED
+            - name: SAML_PROXY_HOSTS
+              value: {{.Values.config.samlHosts | toJson | quote}}
+            - name: SAML_PROXY_ALLOW_IDP_INITIATED
               value: {{.Values.config.samlAllowIdpInitiated | quote}}
-            - name: SAML_SIGN_REQUEST
+            - name: SAML_PROXY_SIGN_REQUEST
               value: {{.Values.config.samlSignRequest | quote}}
-            - name: SSL_CERTIFICATE_PATH
+            - name: SAML_PROXY_SSL_CERTIFICATE_PATH
               value: {{.Values.config.sslCertificatePath}}
-            - name: SSL_CERTIFICATE_KEY_PATH
+            - name: SAML_PROXY_SSL_CERTIFICATE_KEY_PATH
               value: {{.Values.config.sslCertificateKeyPath}}
-            - name: SSL_CERTIFICATE_AUTOGENERATE
+            - name: SAML_PROXY_SSL_CERTIFICATE_AUTOGENERATE
               value: {{.Values.config.sslCertificateAutogenerate | quote}}
           livenessProbe:
             httpGet:
