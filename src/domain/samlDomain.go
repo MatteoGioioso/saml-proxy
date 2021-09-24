@@ -55,7 +55,7 @@ func (g SamlDomain) CreateMiddlewares() error {
 }
 
 func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) {
-	if sharedKernel.GetEnvWithFallbackBool("SSL_CERTIFICATE_AUTOGENERATE", true) {
+	if sharedKernel.GetEnvWithFallbackBool("SAML_PROXY_SSL_CERTIFICATE_AUTOGENERATE", true) {
 		g.logger.Info("Generating certificates for host: " + domain)
 		if err := sharedKernel.GenerateCertificates(domain); err != nil {
 			return nil, err
@@ -86,7 +86,11 @@ func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) 
 		return nil, err
 	}
 
-	rootURL, err := url.Parse(fmt.Sprintf("https://%s", domain))
+	rootURL, err := url.Parse(fmt.Sprintf(
+		"%s://%s",
+		sharedKernel.GetEnvWithFallbackString("SAML_PROXY_PROTOCOL", "https"),
+		domain,
+	))
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +101,8 @@ func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) 
 		Key:               keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate:       keyPair.Leaf,
 		IDPMetadata:       idpMetadata,
-		AllowIDPInitiated: sharedKernel.GetEnvWithFallbackBool("SAML_ALLOW_IDP_INITIATED", true),
-		SignRequest:       sharedKernel.GetEnvWithFallbackBool("SAML_SIGN_REQUEST", true),
+		AllowIDPInitiated: sharedKernel.GetEnvWithFallbackBool("SAML_PROXY_ALLOW_IDP_INITIATED", true),
+		SignRequest:       sharedKernel.GetEnvWithFallbackBool("SAML_PROXY_SIGN_REQUEST", true),
 	})
 	if err != nil {
 		return nil, err
@@ -122,7 +126,7 @@ func (g SamlDomain) GetProvider(domain string) (*samlsp.Middleware, error) {
 }
 
 func (g SamlDomain) getAllowedHosts() ([]string, error) {
-	hostsFromEnv := os.Getenv("SAML_HOSTS")
+	hostsFromEnv := os.Getenv("SAML_PROXY_HOSTS")
 	hosts := samlHosts{}
 
 	if err := json.Unmarshal([]byte(hostsFromEnv), &hosts); err != nil {

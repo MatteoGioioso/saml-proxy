@@ -12,7 +12,7 @@ import (
 
 var (
 	logger = sharedKernel.NewDefaultLogger()
-	metadataEndpoint = os.Getenv("SAML_METADATA_ENDPOINT")
+	metadataEndpoint = os.Getenv("SAML_PROXY_METADATA_ENDPOINT")
 	dir = director.Director{}
 	samlDomain = domain.NewSamlDomain(metadataEndpoint, logger)
 )

@@ -72,19 +72,19 @@ func GenerateCertificates(domain string) error {
 }
 
 func GetCertPath(domain string) string {
-	if os.Getenv("SSL_CERTIFICATE_AUTOGENERATE") == "true" {
+	if os.Getenv("SAML_PROXY_SSL_CERTIFICATE_AUTOGENERATE") == "true" {
 		return getPath(domain, "crt")
 	}
 
-	return os.Getenv("SSL_CERTIFICATE_PATH")
+	return os.Getenv("SAML_PROXY_SSL_CERTIFICATE_PATH")
 }
 
 func GetCertKeyPath(domain string) string {
-	if os.Getenv("SSL_CERTIFICATE_AUTOGENERATE") == "true" {
+	if os.Getenv("SAML_PROXY_SSL_CERTIFICATE_AUTOGENERATE") == "true" {
 		return getPath(domain, "key")
 	}
 
-	return os.Getenv("SSL_CERTIFICATE_KEY_PATH")
+	return os.Getenv("SAML_PROXY_SSL_CERTIFICATE_KEY_PATH")
 }
 
 func getPath(domain, extension string) string {

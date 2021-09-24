@@ -3,9 +3,8 @@ package director
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"github.com/MatteoGioioso/saml-proxy/sharedKernel"
 	"net/http"
-	"net/url"
 )
 
 const (
@@ -30,6 +29,11 @@ type Director struct{}
 func (d Director) GetRedirect(req *http.Request) (string, error) {
 	query := req.URL.Query()
 	redirectUrl := query.Get("rd")
+	redirectUrl = fmt.Sprintf(
+		"%s://%s",
+		sharedKernel.GetEnvWithFallbackString("SAML_PROXY_PROTOCOL", "https"),
+		redirectUrl,
+	)
 	return redirectUrl, nil
 }
 
@@ -44,15 +48,4 @@ func (d Director) GetRootUrl(req *http.Request) (string, error) {
 	}
 	rootUrl := fmt.Sprintf("%s://%s", protocol, host)
 	return rootUrl, nil
-}
-
-func (d Director) GetRootUrlFromGinContext(context *gin.Context) (string, error) {
-	rawRootUrl, exists := context.Get(SamlRootURL)
-	if !exists {
-		return "", errors.New("root url is missing")
-	}
-
-	rootUrl := rawRootUrl.(string)
-	parse, err := url.Parse(rootUrl)
-	return fmt.Sprintf("%s://%s", parse.Scheme, parse.Host), err
 }

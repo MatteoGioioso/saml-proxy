@@ -19,6 +19,14 @@ func GetEnvWithFallbackBool(key string, fallback bool) bool {
 	return fallback
 }
 
+func GetEnvWithFallbackString(key string, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+
+	return fallback
+}
+
 func RandomBytes(n int) []byte {
 	rv := make([]byte, n)
 
