@@ -13,7 +13,7 @@ config:
   sslCertificatePath: ""
   sslCertificateKeyPath: ""
   proxyPort: 9000
-  protocol: "https"
+  protocol: https
 
 image:
   repository: public.ecr.aws/f4h3b7s7/saml-proxy
