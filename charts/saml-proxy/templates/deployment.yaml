@@ -54,6 +54,8 @@ spec:
               value: {{.Values.config.sslCertificateKeyPath}}
             - name: SAML_PROXY_SSL_CERTIFICATE_AUTOGENERATE
               value: {{.Values.config.sslCertificateAutogenerate | quote}}
+            - name: SAML_PROXY_PROTOCOL
+              value: {{.Values.config.protocol}}
           livenessProbe:
             httpGet:
               path: /health
@@ -74,5 +76,5 @@ spec:
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
-      {{- toYaml . | nindent 8 }}
+  {{- toYaml . | nindent 8 }}
   {{- end }}
