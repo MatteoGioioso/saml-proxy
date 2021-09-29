@@ -173,7 +173,7 @@ async function downloadPreviousHelmReleases() {
 
   const createDownload = async (fileName) => new Promise((resolve, reject) => {
     const file = fs.createWriteStream(`docs/${fileName}`);
-    https.get(`https://raw.githubusercontent.com/rebugit/standalone/gh-pages/${fileName}`, function(response) {
+    https.get(`https://raw.githubusercontent.com/MatteoGioioso/saml-proxy/gh-pages/${fileName}`, function(response) {
       response.pipe(file);
       file.on("finish", () => {
         file.close()
@@ -190,10 +190,11 @@ async function downloadPreviousHelmReleases() {
 }
 
 async function helm(version) {
-  const chartDomain = "https://rebugit.github.io/standalone"
+  const chartDomain = "https://matteogioioso.github.io/saml-proxy/"
+  const helmChartPath = "charts/saml-proxy"
   // version chart
   console.log("Versioning helm chart")
-  const filePath = path.join(__dirname, "helm/Chart.yaml")
+  const filePath = path.join(__dirname, `${helmChartPath}/Chart.yaml`)
   const valuesYaml = await fsPromises.readFile(filePath, 'utf8');
   const values = yaml.load(valuesYaml);
   values.version = version
@@ -203,7 +204,7 @@ async function helm(version) {
   // build chart: helm dependency update && helm package . -n rebugit
   console.log("Updating, packaging and creating chart index")
   const {stdout, stderr} = await exec(
-    `helm dependency update helm/ && helm package helm/ -d docs/ && helm repo index docs --url ${chartDomain}`
+    `helm dependency update ${helmChartPath}/ && helm package ${helmChartPath}/ -d docs/ && helm repo index docs --url ${chartDomain}`
   );
   console.log(stdout);
   console.log(stderr);
@@ -249,7 +250,7 @@ async function pipeline() {
     await pushImage(imageLatest.taggedImageObj, imageLatest.taggedImage, auth)
   }
 
-  await downloadPreviousHelmReleases()
+  // await downloadPreviousHelmReleases()
   await helm(version)
   await publishing()
 }

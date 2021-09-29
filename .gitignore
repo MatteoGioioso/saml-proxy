@@ -5,3 +5,4 @@ src/assets
 src/*.crt
 src/*.key
 src/certs
+node_modules

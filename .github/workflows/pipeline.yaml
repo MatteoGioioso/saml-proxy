@@ -7,8 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./.github/workflows/scripts
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
@@ -16,12 +14,9 @@ jobs:
         with:
           node-version: '14'
       - run: npm install
-        working-directory: ${{env.working-directory}}
       - run: npm test
-        working-directory: ${{env.working-directory}}
       - uses: docker/setup-buildx-action@v1
       - name: Run deployment script
-        working-directory: ${{env.working-directory}}
         run: node pipeline.js
         env:
           GITHUB_USERNAME: MatteoGioioso
