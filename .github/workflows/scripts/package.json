@@ -1,0 +1,28 @@
+{
+  "name": "rbi-standalone",
+  "version": "1.0.0",
+  "description": "## Helm",
+  "main": "pipeline.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebugit/rbi-standalone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rebugit/rbi-standalone/issues"
+  },
+  "homepage": "https://github.com/rebugit/rbi-standalone#readme",
+  "dependencies": {
+    "aws-sdk": "^2.956.0",
+    "dockerode": "^3.3.0",
+    "execa": "^5.1.1",
+    "gh-pages": "^3.2.3",
+    "js-yaml": "^4.1.0",
+    "semantic-release": "^17.4.4"
+  }
+}

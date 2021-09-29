@@ -1,0 +1,33 @@
+name: Saml proxy image deployment
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./.github/workflows/scripts
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install
+        working-directory: ${{env.working-directory}}
+      - run: npm test
+        working-directory: ${{env.working-directory}}
+      - uses: docker/setup-buildx-action@v1
+      - name: Run deployment script
+        working-directory: ${{env.working-directory}}
+        run: node pipeline.js
+        env:
+          GITHUB_USERNAME: MatteoGioioso
+          GITHUB_EMAIL: gioioso.matteo@gmail.com
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AWS_REGION: ap-southeast-1
+          GITHUB_REPOSITORY_URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
+          ECR_REPOSITORY_URL: public.ecr.aws/hirvitek
+          ENV: prod
