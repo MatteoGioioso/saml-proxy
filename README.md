@@ -12,7 +12,7 @@ To create a custom application follow those the docs [here](https://docs.aws.ama
 
 One other important setting is the attributes mapping, you need to set the `Subject` to `transient` as showed below:
 
-![attribute mappings](docs/aws_sso_attribute_mappings.png)
+![attribute mappings](assets/aws_sso_attribute_mappings.png)
 
 
 ### Kubernetes
