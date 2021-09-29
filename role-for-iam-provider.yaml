@@ -1,0 +1,50 @@
+# https://awsteele.com/blog/2021/09/15/aws-federation-comes-to-github-actions.html
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Role for Github actions MatteoGioioso/saml-proxy repository"
+
+Parameters:
+  RepoName:
+    Type: String
+    Default: MatteoGioioso/saml-proxy
+
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: github-actions-matteogioioso-saml-proxy
+      Policies:
+        - PolicyName: github-actions-matteogioioso-saml-proxy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [
+                    "ecr-public:DescribeImageTags",
+                    "ecr-public:DescribeImages",
+                    "ecr-public:PutRepositoryCatalogData",
+                    "ecr-public:UploadLayerPart",
+                    "ecr-public:GetAuthorizationToken",
+                    "ecr-public:PutImage",
+                    "ecr-public:UntagResource",
+                    "ecr-public:ListTagsForResource",
+                    "ecr-public:TagResource",
+                    "ecr-public:CompleteLayerUpload",
+                    "ecr-public:GetRepositoryPolicy",
+                    "ecr-public:BatchCheckLayerAvailability",
+                    "sts:GetServiceBearerToken"
+                ]
+                Resource: !Sub 'arn:aws:ecr-public::${AWS::AccountId}:repository/saml-proxy'
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/vstoken.actions.githubusercontent.com'
+            Condition:
+              StringLike:
+                vstoken.actions.githubusercontent.com:sub: !Sub repo:${RepoName}:*
+
+Outputs:
+  Role:
+    Value: !GetAtt Role.Arn
