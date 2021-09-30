@@ -16,6 +16,7 @@ jobs:
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
