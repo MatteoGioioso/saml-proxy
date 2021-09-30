@@ -15,8 +15,8 @@ jobs:
           node-version: '14'
       - name: Dump GitHub context
         env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: $ACTIONS_ID_TOKEN_REQUEST_TOKEN
+        run: echo "$ACTIONS_ID_TOKEN_REQUEST_TOKEN"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
