@@ -13,7 +13,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: echo "$ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+      - run: echo "$GITHUB_CONTEXT"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
