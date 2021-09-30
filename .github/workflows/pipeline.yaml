@@ -16,7 +16,7 @@ jobs:
 
       - name: echo env variable
         run: |
-          echo this is my token $ACTIONS_ID_TOKEN_REQUEST_TOKEN
+          echo this is my token $GITHUB_SERVER_URL
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
