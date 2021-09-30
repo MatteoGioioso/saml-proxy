@@ -16,9 +16,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: ap-southeast-1
-          role-to-assume: arn:aws:iam::164102481775:role/github-actions-matteogioioso-saml-proxy
-#          role-session-name: GitHubActions
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.AWS_ROLE_FOR_GITHUB }}
+          role-session-name: GitHubActions
       - name: Install Helm
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
