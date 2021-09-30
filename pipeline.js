@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+// https://docs.aws.amazon.com/AmazonECR/latest/public/push-oci-artifact.html
+
 const execa = require('execa')
 const semanticRelease = require('semantic-release')
 const Docker = require('dockerode');
@@ -12,6 +14,7 @@ const yaml = require('js-yaml');
 const https = require('https');
 const fs = require("fs");
 const fsPromises = require('fs').promises;
+
 
 const docker = new Docker({socketPath: '/var/run/docker.sock'});
 const ecr = new AWS.ECRPUBLIC({region: process.env.AWS_REGION, apiVersion: '2020-10-30'})
@@ -169,11 +172,9 @@ async function downloadPreviousHelmReleases() {
   const files = [...stdout.split("\n")];
   console.log(files)
 
-  await fsPromises.mkdir('docs/', { recursive: true });
-
   const createDownload = async (fileName) => new Promise((resolve, reject) => {
     const file = fs.createWriteStream(`docs/${fileName}`);
-    https.get(`https://raw.githubusercontent.com/MatteoGioioso/saml-proxy/gh-pages/${fileName}`, function(response) {
+    https.get(`https://raw.githubusercontent.com/MatteoGioioso/saml-proxy/gh-pages/${fileName}`, function (response) {
       response.pipe(file);
       file.on("finish", () => {
         file.close()
@@ -185,7 +186,9 @@ async function downloadPreviousHelmReleases() {
 
   for (const file of files) {
     if (!file || file === '') continue
-    await createDownload(file.trim())
+    if (file.includes('saml-proxy')) {
+      await createDownload(file.trim())
+    }
   }
 }
 
@@ -206,6 +209,17 @@ async function helm(version) {
   const {stdout, stderr} = await exec(
     `helm dependency update ${helmChartPath}/ && helm package ${helmChartPath}/ -d docs/ && helm repo index docs --url ${chartDomain}`
   );
+  console.log(stdout);
+  console.log(stderr);
+}
+
+const prepareGhPagesPublishing = async () => {
+  console.log("Copy files to docs/ folder")
+  await fsPromises.mkdir('docs/assets', {recursive: true});
+  await fsPromises.copyFile(path.join(__dirname, "README.md"), path.join(__dirname, "docs/README.md"))
+  const src = `assets`;
+  const dist = `docs/assets`;
+  const {stdout, stderr} = await exec(`cp -r ${src}/* ${dist}`)
   console.log(stdout);
   console.log(stderr);
 }
@@ -250,9 +264,10 @@ async function pipeline() {
     await pushImage(imageLatest.taggedImageObj, imageLatest.taggedImage, auth)
   }
 
+  // await prepareGhPagesPublishing()
   // await downloadPreviousHelmReleases()
-  await helm(version)
-  await publishing()
+  // await helm(version)
+  // await publishing()
 }
 
 pipeline().then().catch(e => {
