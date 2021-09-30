@@ -13,10 +13,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
+
+      - name: echo env variable
+        run: |
+          echo this is my token $ACTIONS_ID_TOKEN_REQUEST_TOKEN
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
-        env:
-          ACTIONS_ID_TOKEN_REQUEST_TOKEN: placeholder
         with:
           aws-region: ap-southeast-1
           role-to-assume: ${{ secrets.AWS_ROLE_FOR_GITHUB }}
