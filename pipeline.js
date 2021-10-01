@@ -17,7 +17,11 @@ const fsPromises = require('fs').promises;
 
 
 const docker = new Docker({socketPath: '/var/run/docker.sock'});
-const ecr = new AWS.ECRPUBLIC({region: process.env.AWS_REGION, apiVersion: '2020-10-30'})
+const ecr = new AWS.ECRPUBLIC({
+  region: process.env.AWS_REGION,
+  apiVersion: '2020-10-30',
+  endpoint: `https://api.ecr.${process.env.AWS_REGION}.amazonaws.com`
+})
 
 const workloads = [
   {
