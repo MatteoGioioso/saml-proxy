@@ -1,1 +1,0 @@
-# SAML Proxy Helm chart

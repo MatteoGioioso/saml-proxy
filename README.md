@@ -12,12 +12,17 @@ To create a custom application follow those the docs [here](https://docs.aws.ama
 
 One other important setting is the attributes mapping, you need to set the `Subject` to `transient` as showed below:
 
-![attribute mappings](docs/aws_sso_attribute_mappings.png)
+![attribute mappings](assets/aws_sso_attribute_mappings.png)
 
 
 ### Kubernetes
 
-You can deploy Saml-proxy using the helm chart
+You can deploy Saml-proxy using the helm chart:
+
+```shell
+ helm repo add saml-proxy https://matteogioioso.github.io/saml-proxy/
+ helm repo update
+```
 
 You can use this values and use one host per dashboard:
 ```yaml
@@ -70,7 +75,11 @@ spec:
 
 ### Docker and nginx
 
-## Config
+Coming soon...
+
+---
+
+## Config 
 
 | Environmental variable                    	| Helm variable                       	| Type                  	| Description                                                                                                                                                                                              	| Default 	| Example 	|
 |-------------------------------------------	|-------------------------------------	|-----------------------	|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|---------	|---------	|
