@@ -20,7 +20,12 @@ const docker = new Docker({socketPath: '/var/run/docker.sock'});
 const ecr = new AWS.ECRPUBLIC({
   region: process.env.AWS_REGION,
   apiVersion: '2020-10-30',
-  endpoint: new AWS.Endpoint(`api.ecr.ap-southeast-1.amazonaws.com`)
+  endpoint: new AWS.Endpoint(`api.ecr.ap-southeast-1.amazonaws.com`),
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN
+  }
 })
 
 const workloads = [
