@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '14'
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@b8c74de
+        uses: aws-actions/configure-aws-credentials@b8c74de753fbcb4868bf2011fb2e15826ce973af
         with:
           aws-region: ap-southeast-1
           role-to-assume: ${{ secrets.AWS_ROLE_FOR_GITHUB }}
