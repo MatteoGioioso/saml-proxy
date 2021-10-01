@@ -30,13 +30,12 @@ jobs:
       - run: npm install
       - uses: docker/setup-buildx-action@v1
       - name: Run deployment script
-        run: node pipeline.js
+        run: GITHUB_REPOSITORY_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" node pipeline.js
         env:
           GITHUB_USERNAME: MatteoGioioso
           GITHUB_EMAIL: gioioso.matteo@gmail.com
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AWS_REGION: ap-southeast-1
-          GITHUB_REPOSITORY_URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
           ECR_REPOSITORY_URL: public.ecr.aws/hirvitek
           HELM_EXPERIMENTAL_OCI: 1
           ENV: prod
