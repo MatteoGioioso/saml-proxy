@@ -18,14 +18,9 @@ const fsPromises = require('fs').promises;
 
 const docker = new Docker({socketPath: '/var/run/docker.sock'});
 const ecr = new AWS.ECRPUBLIC({
-  region: process.env.AWS_REGION,
+  region: 'us-east-1',
   apiVersion: '2020-10-30',
-  endpoint: new AWS.Endpoint(`api.ecr.ap-southeast-1.amazonaws.com`),
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN
-  }
+  // endpoint: new AWS.Endpoint(`api.ecr-public.us-east-1.amazonaws.com`)
 })
 
 const workloads = [
