@@ -18,9 +18,8 @@ const fsPromises = require('fs').promises;
 
 const docker = new Docker({socketPath: '/var/run/docker.sock'});
 const ecr = new AWS.ECRPUBLIC({
-  region: 'us-east-1',
+  region: 'us-east-1', // Ecr-public is only available in this region
   apiVersion: '2020-10-30',
-  // endpoint: new AWS.Endpoint(`api.ecr-public.us-east-1.amazonaws.com`)
 })
 
 const workloads = [
@@ -268,10 +267,10 @@ async function pipeline() {
     await pushImage(imageLatest.taggedImageObj, imageLatest.taggedImage, auth)
   }
 
-  // await prepareGhPagesPublishing()
+  await prepareGhPagesPublishing()
   // await downloadPreviousHelmReleases()
-  // await helm(version)
-  // await publishing()
+  await helm(version)
+  await publishing()
 }
 
 pipeline().then().catch(e => {
