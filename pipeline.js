@@ -20,7 +20,7 @@ const docker = new Docker({socketPath: '/var/run/docker.sock'});
 const ecr = new AWS.ECRPUBLIC({
   region: process.env.AWS_REGION,
   apiVersion: '2020-10-30',
-  endpoint: `https://api.ecr.${process.env.AWS_REGION}.amazonaws.com`
+  endpoint: new AWS.Endpoint(`https://api.ecr-public.ap-southeast-1.amazonaws.com`)
 })
 
 const workloads = [
@@ -252,7 +252,7 @@ const publishing = () => new Promise((resolve, reject) => {
 })
 
 async function pipeline() {
-  const version = await release();
+  const version = '1.0.1'//await release();
   if (!version) {
     return
   }
