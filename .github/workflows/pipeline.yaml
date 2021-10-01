@@ -7,8 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_ID_TOKEN_REQUEST_TOKEN: placeholder
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
@@ -16,7 +14,7 @@ jobs:
         with:
           node-version: '14'
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@b8c74de
         with:
           aws-region: ap-southeast-1
           role-to-assume: ${{ secrets.AWS_ROLE_FOR_GITHUB }}
