@@ -1,0 +1,31 @@
+version: "3.9"
+
+networks:
+  saml-proxy-network:
+
+services:
+  proxy:
+    build:
+      context: nginx/
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    networks:
+      - saml-proxy-network
+
+  dashboard:
+    networks:
+      - saml-proxy-network
+    build:
+      context: dashboard
+      dockerfile: Dockerfile
+
+  saml-proxy:
+    image: public.ecr.aws/hirvitek/saml-proxy:latest
+    networks:
+      - saml-proxy-network
+    environment:
+      - SAML_PROXY_METADATA_ENDPOINT=<your idp metadata enpoint>
+      - SAML_PROXY_HOSTS=["localhost"]
+      - SAML_PROXY_SSL_CERTIFICATE_AUTOGENERATE=true
+      - PORT=9000
