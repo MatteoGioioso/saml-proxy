@@ -24,7 +24,6 @@ Resources:
                     "ecr-public:DescribeImages",
                     "ecr-public:PutRepositoryCatalogData",
                     "ecr-public:UploadLayerPart",
-                    "ecr-public:GetAuthorizationToken",
                     "ecr-public:PutImage",
                     "ecr-public:UntagResource",
                     "ecr-public:ListTagsForResource",
@@ -32,9 +31,15 @@ Resources:
                     "ecr-public:CompleteLayerUpload",
                     "ecr-public:GetRepositoryPolicy",
                     "ecr-public:BatchCheckLayerAvailability",
-                    "sts:GetServiceBearerToken"
+                    "ecr-public:InitiateLayerUpload"
                 ]
                 Resource: !Sub 'arn:aws:ecr-public::${AWS::AccountId}:repository/saml-proxy'
+              - Effect: Allow
+                Action: [
+                    "ecr-public:GetAuthorizationToken",
+                    "sts:GetServiceBearerToken"
+                ]
+                Resource: "*"
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow

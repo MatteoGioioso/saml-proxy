@@ -251,7 +251,7 @@ const publishing = () => new Promise((resolve, reject) => {
 })
 
 async function pipeline() {
-  const version = '1.0.1'//await release();
+  const version = await release();
   if (!version) {
     return
   }
@@ -268,7 +268,7 @@ async function pipeline() {
   }
 
   await prepareGhPagesPublishing()
-  // await downloadPreviousHelmReleases()
+  await downloadPreviousHelmReleases()
   await helm(version)
   await publishing()
 }

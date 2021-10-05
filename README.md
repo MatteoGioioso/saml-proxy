@@ -3,6 +3,8 @@
 Small SAML 2.0 Service provider authentication proxy.
 I mainly built this to leverage direct AWS SSO authentication with external services such Kubernetes, Linkerd, Grafana dashboards.
 
+> **NOTE** this proxy is tested using Nginx and Nginx ingress controller only
+
 ## Usage
 
 ### Configuration with AWS SSO
@@ -75,7 +77,83 @@ spec:
 
 ### Docker and nginx
 
-Coming soon...
+Your Nginx config should look something like this:
+
+```
+server {
+        ...
+        server_name localhost;
+
+        location /saml/ {
+	      proxy_pass              http://saml-proxy:9000;
+	      proxy_set_header        Host $host;
+	      proxy_set_header        X-Auth-Request-Redirect $request_uri;
+          proxy_set_header        X-Forwarded-Uri $request_uri;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+        }
+
+        location = /saml/auth {
+          internal;
+          proxy_pass              http://saml-proxy:9000;
+          proxy_pass_request_body off;
+          proxy_set_header        Content-Length "";
+          proxy_set_header        X-Original-URI $request_uri;
+          proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header        X-Forwarded-Proto $scheme;
+          proxy_set_header        X-Forwarded-Host $host;
+        }
+
+        location / {
+		    auth_request /saml/auth;
+			error_page 401 = /saml/sign_in?rd=$host$request_uri;
+
+		    auth_request_set $auth_cookie $upstream_http_set_cookie;
+		    add_header Set-Cookie $auth_cookie;
+
+		   proxy_buffer_size          256k;
+           proxy_buffers              4 512k;
+           proxy_busy_buffers_size    512k;
+
+		   proxy_pass http://dashboard:5000;
+	    }
+}
+
+```
+
+And then your `docker-compose.yaml`:
+
+```yaml
+services:
+  proxy:
+    build:
+      context: nginx/
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    networks:
+      - saml-proxy-network
+
+  dashboard:
+    networks:
+      - saml-proxy-network
+    build:
+      context: dashboard
+      dockerfile: Dockerfile
+
+  saml-proxy:
+    image: public.ecr.aws/hirvitek/saml-proxy:latest
+    networks:
+      - saml-proxy-network
+    environment:
+      - SAML_PROXY_METADATA_ENDPOINT=https://my-idp/metadata/xxxxxxxxxxxxxxxxxx
+      - SAML_PROXY_HOSTS=["mydashboard.exampl.com"]
+      - SAML_PROXY_SSL_CERTIFICATE_AUTOGENERATE=true
+      - PORT=9000
+```
+
+You can check the full example and run it locally in the example folder: `example/dockerCompose`
 
 ---
 
