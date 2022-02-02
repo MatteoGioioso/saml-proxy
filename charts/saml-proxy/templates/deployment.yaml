@@ -44,6 +44,8 @@ spec:
               value: {{.Values.config.samlMetadataEndpoint}}
             - name: SAML_PROXY_HOSTS
               value: {{.Values.config.samlHosts | toJson | quote}}
+            - name: SAML_PROXY_ENTITY_ID
+              value: {{.Values.config.samlEntityId | quote}}
             - name: SAML_PROXY_ALLOW_IDP_INITIATED
               value: {{.Values.config.samlAllowIdpInitiated | quote}}
             - name: SAML_PROXY_SIGN_REQUEST
