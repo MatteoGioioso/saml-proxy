@@ -45,10 +45,10 @@ Resources:
           - Effect: Allow
             Action: sts:AssumeRoleWithWebIdentity
             Principal:
-              Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/vstoken.actions.githubusercontent.com'
+              Federated: !Sub 'arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com'
             Condition:
               StringLike:
-                vstoken.actions.githubusercontent.com:sub: !Sub repo:${RepoName}:*
+                token.actions.githubusercontent.com:sub: !Sub repo:${RepoName}:*
 
 Outputs:
   Role:
