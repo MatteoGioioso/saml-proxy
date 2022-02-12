@@ -6,6 +6,7 @@ config:
   samlMetadataEndpoint:
   # List of allowed hosts
   samlHosts: []
+  samlEntityId: ""
   samlAllowIdpInitiated: true
   samlSignRequest: true
   sslCertificateAutogenerate: true

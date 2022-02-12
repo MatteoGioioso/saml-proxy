@@ -96,7 +96,7 @@ func (g SamlDomain) createMiddleware(domain string) (*samlsp.Middleware, error) 
 	}
 
 	samlSP, err := samlsp.New(samlsp.Options{
-		EntityID:          "SAMLProxy",
+		EntityID:          sharedKernel.GetEnvWithFallbackString("SAML_PROXY_ENTITY_ID", "SAMLProxy"),
 		URL:               *rootURL,
 		Key:               keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate:       keyPair.Leaf,
