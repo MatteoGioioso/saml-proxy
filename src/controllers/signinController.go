@@ -63,7 +63,7 @@ func (c SigninController) handleStartAuthFlow(w http.ResponseWriter, r *http.Req
 		}
 	}
 
-	authReq, err := c.middleware.ServiceProvider.MakeAuthenticationRequest(bindingLocation)
+	authReq, err := c.middleware.ServiceProvider.MakeAuthenticationRequest(bindingLocation, binding, saml.HTTPPostBinding)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -80,7 +80,12 @@ func (c SigninController) handleStartAuthFlow(w http.ResponseWriter, r *http.Req
 	}
 
 	if binding == saml.HTTPRedirectBinding {
-		redirectURL := authReq.Redirect(relayState)
+		redirectURL, err := authReq.Redirect(relayState, &c.middleware.ServiceProvider)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(`something went wrong`))
+			return
+		}
 		w.Header().Add("Location", redirectURL.String())
 		w.WriteHeader(http.StatusFound)
 		return
