@@ -18,11 +18,11 @@
   },
   "homepage": "https://github.com/rebugit/rbi-standalone#readme",
   "dependencies": {
-    "aws-sdk": "^2.956.0",
-    "dockerode": "^3.3.0",
+    "aws-sdk": "^2.1604.0",
+    "dockerode": "^3.3.5",
     "execa": "^5.1.1",
     "gh-pages": "^3.2.3",
     "js-yaml": "^4.1.0",
-    "semantic-release": "^17.4.4"
+    "semantic-release": "^17.4.7"
   }
 }

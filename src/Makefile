@@ -1,5 +1,4 @@
-build:
-	go mod tidy && go build -o saml-proxy server.go
+IMAGE_NAME =? saml-proxy
 
-run: build
-	. ./env.sh && ./saml-proxy
+build:
+	docker build -t $(IMAGE_NAME) .

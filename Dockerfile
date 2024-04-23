@@ -1,4 +1,4 @@
-FROM public.ecr.aws/bitnami/golang:1.16 AS builder
+FROM golang:1.20 AS builder
 
 COPY src/go.mod src/go.sum ./
 RUN unset GOPATH && go mod tidy && go mod download
@@ -8,14 +8,38 @@ FROM builder AS builder-02
 COPY src/. .
 RUN unset GOPATH && CGO_ENABLED=0 go build -o bin/main .
 
-FROM public.ecr.aws/micahhausler/alpine:3.14.0
-RUN apk -U upgrade
-RUN addgroup -S saml-proxy --gid 1000 && adduser -S saml-proxy --uid 1000 -G saml-proxy
+FROM ubuntu:20.04 AS final
+
+ARG GIN_MODE=release
+ARG USER=saml-proxy
+ARG GROUP=saml
+ARG UID=1001
+ARG GID=1001
+
+ENV GIN_MODE=$GIN_MODE
+ENV USER=$USER
+ENV GROUP=$GROUP
+ENV UID=$UID
+ENV GID=$GID
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    && apt-get update && apt-get upgrade -y
+
+RUN addgroup $GROUP
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "$(pwd)" \
+    --ingroup "$GROUP" \
+    --no-create-home \
+    --uid "$UID" \
+    "$USER"
+
 
 COPY --from=builder-02 /go/bin/main /saml-proxy/main
-RUN chown -R saml-proxy:saml-proxy /saml-proxy
+RUN chown -R $GID:$UID /saml-proxy
 
-USER 1000
+USER $USER
 
 EXPOSE 9000
 

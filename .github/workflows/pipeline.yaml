@@ -18,12 +18,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@master
-        with:
-          aws-region: ap-southeast-1
-          role-to-assume: ${{ secrets.AWS_ROLE_FOR_GITHUB }}
-          role-session-name: GitHubActions
       - name: Install Helm
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -37,7 +31,8 @@ jobs:
           GITHUB_USERNAME: MatteoGioioso
           GITHUB_EMAIL: gioioso.matteo@gmail.com
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AWS_REGION: ap-southeast-1
-          ECR_REPOSITORY_URL: public.ecr.aws/hirvitek
+          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_REPOSITORY: ${{ secrets.DOCKER_USERNAME }}/saml-proxy
           HELM_EXPERIMENTAL_OCI: 1
           ENV: prod

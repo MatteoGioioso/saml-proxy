@@ -17,7 +17,7 @@ config:
   protocol: https
 
 image:
-  repository: public.ecr.aws/hirvitek/saml-proxy
+  repository: matteogioioso/saml-proxy
   pullPolicy: Always
   tag: latest
 
