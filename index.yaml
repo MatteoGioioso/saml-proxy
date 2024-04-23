@@ -3,7 +3,17 @@ entries:
   saml-proxy:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-12T07:55:41.10280421Z"
+    created: "2024-04-23T12:58:28.190953437Z"
+    description: A Helm chart for Kubernetes
+    digest: e1a07de64be935da38e72053b901c844837b82829a660958ed8b5988744e12bc
+    name: saml-proxy
+    type: application
+    urls:
+    - https://matteogioioso.github.io/saml-proxy/saml-proxy-1.0.5.tgz
+    version: 1.0.5
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-04-23T12:58:28.190666319Z"
     description: A Helm chart for Kubernetes
     digest: e12609e336686bc0710d7d438da00757987f74792b7915719432c1a28f8b3778
     name: saml-proxy
@@ -13,7 +23,7 @@ entries:
     version: 1.0.4
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-12T07:55:41.102349907Z"
+    created: "2024-04-23T12:58:28.190360016Z"
     description: A Helm chart for Kubernetes
     digest: 43f38a3031f820b9ba43c47ccf533c975ad1c601430b4e83faa592db1f3ce427
     name: saml-proxy
@@ -23,7 +33,7 @@ entries:
     version: 1.0.3
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-02-12T07:55:41.101832003Z"
+    created: "2024-04-23T12:58:28.190059193Z"
     description: A Helm chart for Kubernetes
     digest: d2e0b556d630b9c1b9b3cb1034ab023ef6ee2905784e435663e1928d84bcf16b
     name: saml-proxy
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://matteogioioso.github.io/saml-proxy/saml-proxy-1.0.1.tgz
     version: 1.0.1
-generated: "2022-02-12T07:55:41.101081098Z"
+generated: "2024-04-23T12:58:28.189631263Z"
